@@ -227,6 +227,7 @@ func (this *Client) auth(msg *Msg) error {
 // OnData called when the event's Data coming.
 func (this *Client) OnData(in *[]byte) (out []byte, action evio.Action) {
 	msg, err := Packer.Unpack(in)
+	// fmt.Printf("%+v\n", msg)
 	switch this.state {
 	case ST_ESTABLISHED:
 		if err == nil {

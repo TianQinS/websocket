@@ -1,6 +1,7 @@
 package module
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/TianQinS/fastapi/basic"
@@ -12,7 +13,7 @@ type ModuleManager struct {
 
 func NewModuleManager() (m *ModuleManager) {
 	m = &ModuleManager{
-		mods: make(map[string]*DefaultModule, 0),
+		mods: make(map[string]*DefaultModule),
 	}
 	return
 }
@@ -44,12 +45,13 @@ func destroy(m *DefaultModule) {
 
 // Register a module by a unique topic.
 func (this *ModuleManager) Register(m Module) {
-	md := new(DefaultModule)
-	topic := m.GetTopic()
-	md.mi = m
-	md.closeSig = make(chan bool, 1)
-	m.RegisterMgr(this)
-	this.mods[topic] = md
+	if topic := m.GetTopic(); topic != "" {
+		md := new(DefaultModule)
+		md.mi = m
+		md.closeSig = make(chan bool, 1)
+		m.RegisterMgr(this)
+		this.mods[topic] = md
+	}
 }
 
 func (this *ModuleManager) GetModule(topic string) Module {
@@ -73,6 +75,7 @@ func (this *ModuleManager) CallWithCallback(topic string, f, cb interface{}, cbP
 	if m := this.GetModule(topic); m != nil {
 		err = m.CallWithCallback(f, cb, cbParams, params)
 	} else {
+		fmt.Println(this)
 		err = Post.PutQueueWithCallback(f, cb, cbParams, params...)
 	}
 	return

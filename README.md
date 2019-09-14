@@ -1,4 +1,4 @@
-# CommApi
+# Websocket
 [![GoDoc](https://godoc.org/github.com/TianQinS/websocket?status.svg)](https://godoc.org/github.com/TianQinS/websocket)
 
 **简介**

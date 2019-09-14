@@ -3,10 +3,10 @@ package event
 import (
 	"time"
 
-	"github.com/TianQinS/websocket/config"
-	"github.com/TianQinS/websocket/module"
 	"github.com/TianQinS/evio"
 	"github.com/TianQinS/fastapi/post"
+	"github.com/TianQinS/websocket/config"
+	"github.com/TianQinS/websocket/module"
 )
 
 var (
@@ -54,19 +54,15 @@ func (this *EventMgr) Serve(addr ...string) error {
 		return
 	}
 	this.events.Opened = func(ec evio.Conn) (out []byte, opts evio.Options, action evio.Action) {
-		cc := NewClient(&ec, this, this.apps)
-		ec.SetContext(cc)
+		ec.SetContext(NewClient(&ec, this, this.apps))
 		return
 	}
 	this.events.Closed = func(ec evio.Conn, err error) (action evio.Action) {
-		cc := ec.Context().(*Client)
-		Post.PutQueueSpec(cc.OnClose, false)
+		Post.PutQueueSpec(ec.Context().(*Client).OnClose, false)
 		return
 	}
-
 	this.events.Data = func(ec evio.Conn, in []byte) (out []byte, action evio.Action) {
-		cc := ec.Context().(*Client)
-		out, action = cc.OnData(&in)
+		out, action = ec.Context().(*Client).OnData(&in)
 		return
 	}
 	if err := evio.Serve(this.events, addr...); err != nil {
