@@ -274,7 +274,7 @@ func (this *Client) OnClose() {
 	}
 }
 
-// WriteMsg is thread-safe, it pushes an PubPack message to client.
+// WriteMsg pushes an message to client.
 func (this *Client) WriteMsg(body []byte) {
 	if this.state == ST_ESTABLISHED {
 		wsutil.WriteServerText(*this.conn, body)

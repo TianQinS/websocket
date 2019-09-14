@@ -7,11 +7,11 @@ var phaser = path.join(phaserModule, 'build/custom/phaser-split.js'),
     pixi = path.join(phaserModule, 'build/custom/pixi.js'),
     p2 = path.join(phaserModule, 'build/custom/p2.js');
 module.exports = {
-    //devtool: 'eval-source-map',//配置生成Source Maps，选择合适的选项
-    devtool:"cheap-module-source-map",
+    devtool: 'eval-source-map',//配置生成Source Maps，选择合适的选项
+    // devtool:"cheap-module-source-map",
     entry:  __dirname + "/src/main.js",//已多次提及的唯一入口文件
     output: {
-        path: __dirname,//打包后的文件存放的地方
+        path: path.resolve(__dirname, "dist"),//打包后的文件存放的地方
         filename: "main.js"//打包后输出文件的文件名
     },
 
@@ -31,7 +31,7 @@ module.exports = {
     },
 
     devServer: {
-        contentBase: "./js",
+        contentBase: "./",
         colors: true,
         historyApiFallback: true,
         inline: true
