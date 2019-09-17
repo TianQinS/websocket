@@ -1,7 +1,6 @@
 package module
 
 import (
-	"fmt"
 	"sync"
 
 	"github.com/TianQinS/fastapi/basic"
@@ -75,7 +74,7 @@ func (this *ModuleManager) CallWithCallback(topic string, f, cb interface{}, cbP
 	if m := this.GetModule(topic); m != nil {
 		err = m.CallWithCallback(f, cb, cbParams, params)
 	} else {
-		fmt.Println(this)
+		// fmt.Println(this)
 		err = Post.PutQueueWithCallback(f, cb, cbParams, params...)
 	}
 	return

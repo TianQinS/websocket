@@ -3,8 +3,8 @@ package database
 import (
 	"fmt"
 
-	"github.com/TianQinS/websocket/config"
 	"github.com/TianQinS/fastapi/basic"
+	"github.com/TianQinS/websocket/config"
 	"github.com/go-redis/redis"
 	"github.com/pkg/errors"
 )
@@ -103,7 +103,7 @@ func (this *Rdb) BLpop(key string) chan string {
 		for {
 			if res, err := this.BLPop(0, key).Result(); err == nil {
 				result <- res[1]
-			} else {
+			} else { // err == Error/redis.Nil
 				basic.PackErrorMsg(err, key)
 			}
 		}

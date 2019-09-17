@@ -10,7 +10,7 @@ import (
 	"github.com/TianQinS/websocket/config"
 	kdb "github.com/TianQinS/websocket/database"
 	"github.com/TianQinS/websocket/module"
-	"github.com/gobwas/ws/wsutil"
+	"github.com/gobwas/ws"
 )
 
 const (
@@ -27,6 +27,9 @@ var (
 	UserTable = config.Conf.Mdb.User
 	// Hook is a default global hookmgr.
 	Hook = basic.HookMgr
+
+	// StateServerSide = ws.StateServerSide
+	OpText = ws.OpText
 )
 
 func init() {
@@ -275,17 +278,20 @@ func (this *Client) OnClose() {
 }
 
 // WriteMsg pushes an message to client.
-func (this *Client) WriteMsg(body []byte) {
+func (this *Client) WriteMsg(body []byte) (err error) {
 	if this.state == ST_ESTABLISHED {
-		wsutil.WriteServerText(*this.conn, body)
+		// wsutil.WriteMessage(*this.conn, StateServerSide, OpText, body)
+		frame := ws.NewFrame(OpText, true, body)
+		err = ws.WriteFrame(*this.conn, frame)
 	}
+	return
 }
 
 // CallNR call a registration function in remote client without callback.
 func (this *Client) CallNR(topic, f string, params ...interface{}) error {
 	body, err := Packer.Pack(topic, f, params)
 	if err == nil {
-		this.WriteMsg(body)
+		err = this.WriteMsg(body)
 	}
 	return err
 }

@@ -22,8 +22,15 @@ def on_close(ws):
 def on_open(ws):
 	def run(*args):
 		ws.send(json.dumps({"tpc":"login", "func":"login", "args": ["guid","md5"], "cb":""}))
-		ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
-		time.sleep(1)
+		i = 0
+		while i < 10:
+			ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
+			ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
+			ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
+			ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
+			ws.send(json.dumps({"tpc":"unknown", "func":"test", "args": ["arg1","arg2"], "cb":"callback"}))
+			time.sleep(1)
+			i += 1
 		ws.close()
 		print("thread terminating...")
 	thread.start_new_thread(run, ())
