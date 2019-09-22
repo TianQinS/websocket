@@ -7,6 +7,7 @@
 >1. module：模块化结构，方便添加各种自定义模块。
 >2. hotfix：提供对register functions和public variable的在线更新功能。
 >3. client：提供临时变量，本地变量和数据库变量的存取接口。
+>4. pymodule：python版模块管理与RPCModule，采用Greenlet异步，兼容Python2/Python3。
 
 
 **基础模块**
@@ -16,6 +17,7 @@
 	* [Hotfix](#hotfix)
 	* [Module](#module)
 	* [RPCModule](#rpcmodule)
+	* [Pymodule](#pymodule)
 ---------------------------------------
 
 ### Hotfix
@@ -160,3 +162,94 @@ func (this *RPCModule) Run(closeSig chan bool) {
 - 可以使用CallGo, CallSpec, CallWithCallback或Call函数直接调用某个模块的所有公有函数和注册函数；一般情况下，被调用的函数只会在被调用模块的单个（唯一）协程中进行调用。
 - 可以使用RemoteCall（带回调BLpop）和RemoteCallNR（无回调PubSub）函数执行远程模块调用。
 - 新增了RegisterRpc函数（注册的函数只有该模块可以远程调用），可以通过默认注册的exec和eval函数进行运行期模块数据和相关注册函数的在线更新。
+
+### Pymodule
+
+Pymodule是模块管理的python版，基于gevent，兼容python2和python3，预置RPCModule模块。
+
+```python
+
+# github.com/TianQinS/websocket/scripts/pymodule/module.py
+class Module(Greenlet):
+	
+	def __init__(self, topic=""):
+		Greenlet.__init__(self)
+		self._stop_evt = Event()
+		self.app = None
+		self.closeSig = False
+		self.topic = topic
+		self.settings = None
+
+	def _run(self):
+		try:
+			self.Run()
+		except Exception:
+			print(traceback.format_exc())
+		self._stop_evt.set()
+
+
+class ModuleManager(object):
+
+	def spawn(self ,f):
+		u"""加入异步任务."""
+		task = gevent.spawn(f)
+		self._tasks.append(task)
+		task.join()
+
+	def register(self, f, func):
+		u"""注册处理函数"""
+		self.cmd_tables[f] = func
+	
+	def dispatch(self, f, args):
+		u"""处理注册函数调用,结果返回用于执行callback逻辑."""
+		ret = None
+		func = self.cmd_tables.get(f, None)
+		if func:
+			ret = func(*args)
+		return ret
+		
+	def run(self, *apps):
+		for app in apps:
+			self.mods[app.topic] = app
+		for (k, m) in self.mods.items():
+			m.onInit(self, m.settings)
+			m.start()
+
+
+# github.com/TianQinS/websocket/scripts/pymodule/rpcmodule.py
+class RPCModule(Module):
+
+	def __init__(self, **conf):
+		# super(RPCModule, self).__init__()
+		Module.__init__(self)
+		self.lua_scripts = {}
+		self.conf = conf
+		self.alive = True
+		self.topic = config.RPC_TOPIC
+		self.db = None
+		self.app = None
+
+	def call(self, topic, f, callback, *args):
+		u"""调用测试."""
+		_data = json.dumps({
+			"func": f,
+			"ct": self.topic,
+			"cb": callback,
+			"args": args,
+		})
+		self.db.rpush(topic, _data)
+
+	def Run(self):
+		while self.closeSig == False:
+			topic, data = self.db.blpop(self.topic)
+			data = json.loads(data)
+			f = data.get("func", None)
+			if f:
+				ret = self.app.dispatch(f, data["args"])
+				cb = data.get("cb", None)
+				ct = data.get("ct", None)
+				if cb and ct:
+					self.call(ct, cb, "", ret)
+```
+
+- RPCModule模块类似go语言同名模块，借助redis进行rpc调用，数据规格相同，简单易用。
