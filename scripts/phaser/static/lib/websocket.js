@@ -147,6 +147,7 @@ client.prototype = {
 		// 消息处理
 		this._sock.onmessage = function(event)
 		{
+			// console.log(event);
 			var data = JSON.parse(event.data.toString());
 			if (data.error != undefined && opts.onError) {
 			    opts.onError(data.error); 
@@ -161,7 +162,7 @@ client.prototype = {
 	  */
 	process_msg: function(data) {
 		try{
-			var callback=this.waiting_queue.find(data.func)
+			var callback=this.waiting_queue.find(data.func);
 			if(callback!=null){
 				// 约定"callback/id"格式的回调函数只调用一次
 				var h=data.func.split("/")
@@ -185,13 +186,13 @@ client.prototype = {
 		this.curr_id=this.curr_id+1
 		var cb = func+"/"+this.curr_id;
 		var payload=JSON.stringify({
-			topic: topic,
+			tpc: topic,
 			func: func,
 			args: args,
 			cb: cb, 
 		})
-        this.on(cb,callback)
-        console.log(payload);
+		this.on(cb,callback)
+		// console.log(payload);
 		this._sock.send(payload);
 	},
 	/**
@@ -202,7 +203,7 @@ client.prototype = {
 	 */
 	requestNR:function(topic,func,args){
 		var payload=JSON.stringify({
-			topic: topic,
+			tpc: topic,
 			func: func,
 			args: args,
 			cb: "",

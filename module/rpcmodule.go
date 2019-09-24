@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"reflect"
 
+	"github.com/TianQinS/fastapi/basic"
 	"github.com/TianQinS/websocket/config"
 	"github.com/TianQinS/websocket/database"
-	"github.com/TianQinS/fastapi/basic"
 
 	// for 10ms hook.
 	_ "github.com/TianQinS/fastapi/timer"
@@ -103,8 +103,11 @@ func (this *RPCModule) unpackPubMsg(data []byte) (*PubMsg, error) {
 func (this *RPCModule) execute(f string, args []interface{}, callbackTopic, callback string) {
 	if function, ok := this.RPCFunctions[f]; ok {
 		defer func() {
-			if e, ok := recover().(error); ok {
+			info := recover()
+			if e, ok := info.(error); ok {
 				basic.PackErrorMsg(e, f)
+			} else if info != nil {
+				basic.PackErrorMsg(fmt.Errorf("%+v", info), f)
 			}
 		}()
 		_f := reflect.ValueOf(function)

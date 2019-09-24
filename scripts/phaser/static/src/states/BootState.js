@@ -2,37 +2,36 @@
 var MainMenuState = require('./MainMenuState.js');
 
 module.exports = {
-    preload: function() {
-
-    },
-    create: function() {
-        this.server = window.mqant;
-    },
-    login: function(guid, pwd) {
-        var self = this;
-        var useSSL = 'https:' == document.location.protocol ? true : false;
-        try{
-			this.server.init({
-				host: window.location.hostname,
+	preload: function() {
+	},
+	create: function() {
+		this.server = window.Client;
+		this.login();
+	},
+	login: function(guid, pwd) {
+		var self = this;
+		try{
+			var host = window.location.hostname;
+			if (host == "")
+			{
+				host = "127.0.0.1";
+			}
+			this.server.connect({
+				host: host,
 				port: 23456,
-				client_id: "demo",
-				userName: guid,
-				password: pwd,
-				useSSL:useSSL,
-				onSuccess:function() {
+				onConnect: function() {
 					//alert("游戏连接成功!");
-					self.server.requestNR("demo", "login", []);
-
-					self.server.on("onLogin", function(data) {
-                        State.nick = data.nick;
-                        State.lv = data.lv;
-                        self.game.state.add("MainMenuState", new MainMenuState(nick, lv), false);
+					self.server.requestNR("", "login", ["guid", "md5"]);
+					self.server.request("", "phaserLogin", [], function(nick, lv){
+						self.game.state.add("MainMenuState", new MainMenuState(nick, lv), false);
 						self.state.start("MainMenuState");
 					});
 				},
-				onConnectionLost:function(code,reason) {
-					console.log(code)
-					alert("连接断开了:"+code);
+				onClose: function() {
+					console.log("closed.");
+				},
+				onError: function(e) {
+					console.log(e);
 				}
 			});
 		}catch (e){

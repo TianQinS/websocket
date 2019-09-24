@@ -11,7 +11,12 @@ window.onload = function () {
     if (scale > 1) {
         scale = 1 / scale;
     }
-    var game = new Phaser.Game(width, width * scale, Phaser.AUTO, gameDiv);
+    var game;;
+	if (window.location.hostname == "") {
+		game = new Phaser.Game(width, width * scale, Phaser.CANVAS, gameDiv);
+	} else {
+		game = new Phaser.Game(width, width * scale, Phaser.AUTO, gameDiv);
+	}
     Phaser.myScaleManager.boot();
     game.state.add("BootState", BootState, true);
     game.state.start("BootState");

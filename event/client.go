@@ -297,6 +297,7 @@ func (this *Client) CallNR(topic, f string, params ...interface{}) error {
 }
 
 func (this *Client) ClientCallback(f string, params ...interface{}) error {
+	// fmt.Println(f, params)
 	return this.CallNR("", f, params...)
 }
 
