@@ -58,7 +58,7 @@ func (this *EventMgr) Serve(addr ...string) error {
 		return
 	}
 	this.events.Closed = func(ec evio.Conn, err error) (action evio.Action) {
-		Post.PutQueueSpec(ec.Context().(*Client).OnClose, false)
+		Post.PutQueueSpec(ec.Context().(*Client).OnClose)
 		return
 	}
 	this.events.Data = func(ec evio.Conn, in []byte) (out []byte, action evio.Action) {

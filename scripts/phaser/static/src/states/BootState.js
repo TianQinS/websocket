@@ -3,6 +3,8 @@ var MainMenuState = require('./MainMenuState.js');
 
 module.exports = {
 	preload: function() {
+		this.game.load.image("compass", "static/assets/touch1.png");
+		this.game.load.image("touch", "static/assets/touch2.png");
 	},
 	create: function() {
 		this.server = window.Client;
