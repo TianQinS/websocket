@@ -6,7 +6,7 @@ var BootState = require('./states/BootState.js');
 window.onload = function () {
     var gameDiv = document.getElementById("game");
     Phaser.myScaleManager = new MyScaleManager(gameDiv);
-    var width=800;
+    var width=1600;
     var scale = screen.width / screen.height;
     if (scale > 1) {
         scale = 1 / scale;

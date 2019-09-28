@@ -31,7 +31,8 @@ func (this *PhaserModule) Run(closeSig chan bool) {
 	return
 }
 
-func (this *PhaserModule) login(client *event.Client) (name string, lv int) {
+func (this *PhaserModule) login(client *event.Client) (guid, name string, lv int) {
+	guid = client.Guid
 	name = "测试名称"
 	lv = 99
 	return

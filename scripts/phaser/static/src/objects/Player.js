@@ -2,19 +2,28 @@
 
 var extend = require('../utils/inherits.js');
 var GameRole = require('./Role.js');
-var client=window.Client;
 module.exports = extend(GameRole, {
 	ctor: function ctor(game, x, y, group, properties) {
 		this.roleType = "hero";
 		properties = properties || {};
 		this.game = game;
+		this.guid = properties.guid;
 		this.lv = properties.lv;
 		this.nick = properties.nick;
 		this.hp = properties.hp;
 		this.arrows = properties.arrowsGroup; //视觉观察组
 		this.names = properties.namesGroup;
 
+		this.friction = 0.9;
+		this.fireSpeed = -10;
+		this.rotateSpeed = 5;
+
 		this.blood = 0;
+		this.rotateCd = 0;
+		this.xSpeed = 0;
+		this.ySpeed = 0;
+		this.angle = 0;
+		this.rotateDirection = 1;
 		this.rotateCd = 0;
 
 		this._super(this.game, x, y, "ball", null, properties);
@@ -73,15 +82,40 @@ module.exports = extend(GameRole, {
 		}
 		return this.nameObj;
 	},
+	Fire: function(x, y) {
+		var curTime = new Date().getTime();
+		var angle = Math.atan2(-y, -x) / Math.PI * 180;
+
+		// 自转冷却
+		this.rotateCd = (new Date()).getTime() + 250;
+		if (angle > this.getArrow().angle) {
+			if (this.rotateDirection < 0) {
+				this.rotateDirection *= -1;
+			}
+		} else {
+			if (this.rotateDirection > 0) {
+				this.rotateDirection *= -1;
+			}
+		}
+		this.getArrow().angle = angle;
+		this.xSpeed = x / this.fireSpeed;
+		this.ySpeed = y / this.fireSpeed;
+	},
 	Rotate: function () {
-		this.getArrow().angle += 0.5;
+		var curTime = new Date().getTime();
+		if (curTime > this.rotateCd) {
+			// 自转特效
+			this.getArrow().angle += this.rotateSpeed * this.rotateDirection;
+		}
 	},
 	Move: function () {
-		this.x=this.x+1;
-		this.y=this.y+1;
-		this.getArrow().x=this.x;
-		this.getArrow().y=this.y;
-		this.getName().x=this.x;
-		this.getName().y=this.y;
+		this.xSpeed *= this.friction;
+		this.ySpeed *= this.friction
+		this.x += this.xSpeed;
+		this.y += this.ySpeed;
+		this.getArrow().x = this.x;
+		this.getArrow().y = this.y;
+		this.getName().x = this.x;
+		this.getName().y = this.y;
 	}
 });

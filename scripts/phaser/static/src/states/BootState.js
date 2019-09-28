@@ -24,10 +24,8 @@ module.exports = {
 				onConnect: function() {
 					//alert("游戏连接成功!");
 					self.server.requestNR("", "login", ["guid", "md5"]);
-					self.server.request("", "phaserLogin", [], function(nick, lv){
-						self.game.state.add("MainMenuState", new MainMenuState(nick, lv), false);
-						self.state.start("MainMenuState");
-					});
+					self.game.state.add("MainMenuState", new MainMenuState(), false);
+					self.state.start("MainMenuState");
 				},
 				onClose: function() {
 					console.log("closed.");

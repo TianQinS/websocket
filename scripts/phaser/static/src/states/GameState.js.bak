@@ -106,7 +106,8 @@ module.exports = extend(function () {}, {
 				this.game.add.tween(player).to( { blood: blood }, 300, "Linear", true);	
 			}
 		}
-		if (this.hpTips != undefined && this.hpTips.alpha == 1) {
+		if (this.hpTips != undefined && this.hpTips.alpha == 1)
+		{
 			// 清理残余效果
 			this.hpTips.kill();
 		}
