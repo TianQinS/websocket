@@ -23,6 +23,12 @@ module.exports = extend(function () {}, {
 		this.game.load.image("ball", "static/assets/ball.png");
 	},
 	create: function() {
+		this.game.scale.pageAlignHorizontally = true;
+		this.game.scale.pageAlignVertically = true;
+		this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+		this.game.world.resize(2560, 2560);
+		this.game.world.setBounds(0, 0, 2560, 2560);
+
 		var bgSprite = this.game.add.tileSprite(0, 0, 2*this.game.world.width, 2*this.game.world.height, "bg");
 		// bgSprite.autoScroll(-50,50);
 		/* 视觉观察组 */
@@ -35,17 +41,16 @@ module.exports = extend(function () {}, {
 		this.initMap();
 		
 		this.hero = this.joinHero({x:100, y:100, lv: this.lv, nick: this.nick, guid: this.guid});
-		console.log(this.game.stage.width, this.game.stage.height);
-		// this.game.camera.deadzone = new Phaser.Rectangle(200, 200, this.game.stage.width - 200, this.game.stage.height - 200); //镜头跟随触发区域dead zone
-		this.game.camera.deadzone = new Phaser.Rectangle(0,0,100,100);
+		this.game.camera.deadzone = new Phaser.Rectangle(400, 400, this.game.stage.width - 400, this.game.stage.height - 400); //镜头跟随触发区域dead zone
 		this.game.camera.follow(this.hero); 
 	},
 	initMap: function(){
 		this.gicMap = this.game.add.graphics(0, 0, this.gicGroup); // 小地图
 		this.gicMap.lineStyle(1, 0xdfdfdf);
 		this.gicMap.alpha = 0.4;
+		this.gicMap.fixedToCamera = true;
 		this.gicMap.beginFill(0x99CC66, 1);
-		this.gicMap.drawCircle(100, 100, 160);
+		this.gicMap.drawCircle(200, 200, 360);
 		this.gicMap.endFill();
 	},
 	joinHero: function(role) {
@@ -55,16 +60,18 @@ module.exports = extend(function () {}, {
 			lv: role.lv, // 等级
 			nick: role.nick, // 玩家昵称
 			guid: role.guid,
-			hp: 800, // 当前气血
+			hp: 1600, // 当前气血
 		});
+		hero.scale.x = 2;
+		hero.scale.y = 2;
 		return hero;
 	},
 	updateBlood: function(player){
 		// 刻度换算
 		var blood = player.hp / 35;
-		var x = player.x - blood / 2;
-		var y = player.y - 30;
-		var deltaX = 5;
+		var x = player.x - blood/2;
+		var y = player.y - 60;
+		var deltaX = 6;
 		if (player.hp >0) {
 			if (player.alpha == 0.3)
 			{
@@ -93,16 +100,16 @@ module.exports = extend(function () {}, {
 				}
 				// 血量变动动画
 				var hpStr = hpDelta.toString();
-				var style = { font: "14px Arial", fill: "#ff0000", align: "center" };
+				var style = { font: "20px Arial", fill: "#ff0000", align: "center" };
 				if (hpDelta > 0)
 				{
 					hpStr = "+" + hpStr;
-					style = { font: "14px Arial", fill: "#00ff00", align: "center" };
+					style = { font: "20px Arial", fill: "#00ff00", align: "center" };
 				}
 				this.hpTips = player.addChild(this.game.make.text(0, -10, hpStr, style));
 				this.hpTips.anchor.set(0.5);
 				this.hpTips.alpha = 0.1;
-				this.game.add.tween(this.hpTips).to( { alpha: 1, y: -50 }, 400, "Linear", true);
+				this.game.add.tween(this.hpTips).to( { alpha: 1, y: -50 }, 500, "Linear", true);
 				this.game.add.tween(player).to( { blood: blood }, 300, "Linear", true);	
 			}
 		}
@@ -117,12 +124,12 @@ module.exports = extend(function () {}, {
 			colorBlood = 0x00EE00; // 本阵营
 		}
 		gic.beginFill(colorBlood, 0.7);
-		gic.drawRoundedRect(x, y, player.blood, 7, 2);
+		gic.drawRoundedRect(x, y, player.blood, 14, 4);
 		gic.beginFill(0x333333, 0.5);
 		// 血条刻度
 		for (var i=deltaX; i<player.blood; i+=deltaX)
 		{
-			gic.drawRect(x+i, y, 1, 4);
+			gic.drawRect(x+i, y, 2, 10);
 		}
 	},
 	Fire: function() {
@@ -145,5 +152,14 @@ module.exports = extend(function () {}, {
 		this.Fire();
 		if (this.frame % 10 == 0) {
 		}
+	},
+	resize: function(){
+		this.game.world.resize(2560, 2560);
+		this.game.world.setBounds(0, 0, 2560, 2560);
+		this.game.camera.follow(this.hero);
+	},
+	paused: function() {
+	},
+	resumed: function() {
 	}
 });

@@ -14,7 +14,7 @@ module.exports = extend(GameRole, {
 		this.arrows = properties.arrowsGroup; //视觉观察组
 		this.names = properties.namesGroup;
 
-		this.friction = 0.9;
+		this.friction = 0.95;
 		this.fireSpeed = -10;
 		this.rotateSpeed = 5;
 
@@ -42,6 +42,7 @@ module.exports = extend(GameRole, {
 		if(this.alive){
 			this._super();
 			this.arrow.kill();
+			this.nameObj.kill();
 		}
 	},
 	getArrow: function getArrow() {
@@ -55,6 +56,8 @@ module.exports = extend(GameRole, {
 				this.arrow = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY, "arrow");
 				this.arrow.anchor.x = -1;
 				this.arrow.anchor.y = 0.5;
+				this.arrow.scale.x = 2;
+				this.arrow.scale.y = 2;
 			}
 		}
 		return this.arrow;
@@ -74,6 +77,8 @@ module.exports = extend(GameRole, {
 				this.nameObj.anchor.y = -1;
 				this.nameObj.setShadow(1, 1, color2, 0);
 				this.nameObj.alpha = 0.7;
+				this.nameObj.scale.x = 2;
+				this.nameObj.scale.y = 2;
 			}
 			if (this.nameObj.text != this.nick)
 			{

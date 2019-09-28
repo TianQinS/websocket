@@ -42,12 +42,12 @@
 		this.imageGroup = [];
 
 		var comp = this.game.add.sprite(0, 0, 'compass');
-		comp.scale.x = 0.5;
-		comp.scale.y = 0.5;
+		comp.scale.x = 1;
+		comp.scale.y = 1;
 		this.imageGroup.push(comp);
 		var toch =  this.game.add.sprite(0, 0, 'touch');
-		toch.scale.x = 0.6;
-		toch.scale.y = 0.6;
+		toch.scale.x = 1.2;
+		toch.scale.y = 1.2;
 		this.imageGroup.push(toch);
 		
 		this.imageGroup.forEach(function (e) {

@@ -7,7 +7,6 @@ module.exports = extend(Phaser.Sprite, {
 		properties = properties || {};
 		this._super(game, x, y, key, frame);
 		this.rid = properties.rid; //系统角色
-		this.wid = properties.wid;
 	},
 	dead: function dead() {
 		if(this.alive){
