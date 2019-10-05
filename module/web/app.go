@@ -26,7 +26,7 @@ func forbiddenHandler(ctx iris.Context) {
 
 // demo homepage.
 func demo(ctx iris.Context) {
-	ctx.View("demo/index.html")
+	ctx.View("index.html")
 }
 
 // InitApi initialize routing functions.
