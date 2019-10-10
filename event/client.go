@@ -127,6 +127,19 @@ func (this *Client) GetPermVar(key string) interface{} {
 	return nil
 }
 
+// GetPermInt parse the interface{} to int.
+func (this *Client) GetPermInt(key string) int {
+	if val := this.GetPermVar(key); val != nil {
+		switch val.(type) {
+		case float64:
+			return int(val.(float64))
+		case int:
+			return val.(int)
+		}
+	}
+	return 0
+}
+
 // SetPermVar set a local variable and save the whole permVar mapping in local storage.
 func (this *Client) SetPermVar(key string, val interface{}) {
 	defer this.permLock.Unlock()
@@ -143,6 +156,18 @@ func (this *Client) GetMdbVar(key string) interface{} {
 		return val
 	}
 	return nil
+}
+
+func (this *Client) GetMdbInt(key string) int {
+	if val := this.GetMdbVar(key); val != nil {
+		switch val.(type) {
+		case float64:
+			return int(val.(float64))
+		case int:
+			return val.(int)
+		}
+	}
+	return 0
 }
 
 // SetMdbVar set a variable for mdbVar and update it in database.
