@@ -3,6 +3,7 @@ package event
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	// "github.com/eclipse/paho.mqtt.golang/packets"
 	"github.com/TianQinS/evio"
@@ -127,7 +128,14 @@ func (this *Client) GetPermVar(key string) interface{} {
 	return nil
 }
 
-// GetPermInt parse the interface{} to int.
+func (this *Client) GetPermFloat64(key string) float64 {
+	if val := this.GetPermVar(key); val != nil {
+		return val.(float64)
+	}
+	return 0
+}
+
+// GetPermInt parse the interface{} to int with losing accuracy.
 func (this *Client) GetPermInt(key string) int {
 	if val := this.GetPermVar(key); val != nil {
 		switch val.(type) {
@@ -146,6 +154,35 @@ func (this *Client) SetPermVar(key string, val interface{}) {
 	this.permLock.Lock()
 	this.permVar[key] = val
 	this.KSave()
+}
+
+func (this *Client) GetDayCounterData() map[string]interface{} {
+	mpDat := map[string]interface{}{}
+	if mxDat := this.GetPermVar("dCnt"); mxDat != nil {
+		today := time.Now().Format("2006-01-02 15:04:05")
+		mpDat = mxDat.(map[string]interface{})
+		if day := mpDat["day"]; day != today {
+			mpDat = map[string]interface{}{"day": today}
+			this.SetPermVar("dCnt", mpDat)
+		}
+		return mpDat
+	}
+	return mpDat
+}
+
+func (this *Client) SetDayCounter(key string, val float64) {
+	mpDat := this.GetDayCounterData()
+	mpDat[key] = val
+	this.SetPermVar("dCnt", mpDat)
+}
+
+// GerDayCounter get a daily variable.
+func (this *Client) GetDayCounter(key string) float64 {
+	mpDat := this.GetDayCounterData()
+	if val, ok := mpDat[key]; ok {
+		return val.(float64)
+	}
+	return 0.0
 }
 
 // GetMdbVar get a variable in the Mongo collection for user.

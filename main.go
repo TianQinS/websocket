@@ -9,11 +9,11 @@ import (
 	"sync"
 	"syscall"
 
+	"github.com/TianQinS/fastapi/post"
 	"github.com/TianQinS/websocket/config"
 	"github.com/TianQinS/websocket/event"
 	"github.com/TianQinS/websocket/module"
 	"github.com/TianQinS/websocket/module/web"
-	"github.com/TianQinS/fastapi/post"
 
 	// for hotfix
 	"github.com/TianQinS/websocket/hotfix"

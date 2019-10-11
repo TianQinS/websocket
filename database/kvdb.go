@@ -1,6 +1,7 @@
 package database
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/TianQinS/websocket/config"
@@ -95,15 +96,24 @@ func Close() {
 	DB = nil
 }
 
-func Initialize(fpath string) error {
+func Initialize(conf config.Kdb) error {
 	var err error
+	var config buntdb.Config
 	Close()
 	// buntdb.Open(":memory:")
-	DB, err = buntdb.Open(fpath)
+	DB, err = buntdb.Open(conf.Path)
+	if err := DB.ReadConfig(&config); err != nil {
+		fmt.Println(err)
+	}
+	config.AutoShrinkPercentage = conf.ShrinkPercentage
+	config.AutoShrinkMinSize = conf.ShrinkMinSize
+	if err := DB.SetConfig(config); err != nil {
+		fmt.Println(err)
+	}
 	return err
 }
 
 func init() {
 	conf := config.Conf.Kdb
-	Initialize(conf.Path)
+	Initialize(conf)
 }

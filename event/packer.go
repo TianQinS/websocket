@@ -44,7 +44,10 @@ func (this *JsonPacker) Pack(topic, f string, params []interface{}) ([]byte, err
 
 func (this *JsonPacker) Unpack(data *[]byte) (*Msg, error) {
 	msg := &Msg{}
+	// decoder := json.NewDecoder(bytes.NewReader(*data))
+	// decoder.UseNumber()
 	if err := json.Unmarshal(*data, msg); err != nil {
+		// if err := decoder.Decode(msg); err != nil {
 		return nil, err
 	}
 	return msg, nil

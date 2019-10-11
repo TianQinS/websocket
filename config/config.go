@@ -30,7 +30,9 @@ type Config struct {
 }
 
 type Kdb struct {
-	Path string
+	Path             string
+	ShrinkPercentage int
+	ShrinkMinSize    int
 }
 
 type Mdb struct {
