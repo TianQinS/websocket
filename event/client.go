@@ -217,7 +217,10 @@ func (this *Client) SetMdbVar(key string, val interface{}) {
 
 // KSave save the permVar to local file system.
 func (this *Client) KSave() error {
-	return kdb.Put(this.Guid, this.permVar)
+	if len(this.permVar) > 0 {
+		return kdb.Put(this.Guid, this.permVar)
+	}
+	return nil
 }
 
 // KLoad load the permVar after login.
@@ -234,9 +237,11 @@ func (this *Client) MSave(data map[string]interface{}) bool {
 		if data == nil {
 			data = this.mdbVar
 		}
-		query := map[string]interface{}{"guid": this.Guid}
-		Mdb.UpsertOne(UserTable, query, data, nil)
-		return true
+		if len(data) > 0 {
+			query := map[string]interface{}{"guid": this.Guid}
+			Mdb.UpsertOne(UserTable, query, data, nil)
+			return true
+		}
 	}
 	return false
 }
