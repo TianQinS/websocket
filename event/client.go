@@ -157,15 +157,17 @@ func (this *Client) SetPermVar(key string, val interface{}) {
 }
 
 func (this *Client) GetDayCounterData() map[string]interface{} {
-	mpDat := map[string]interface{}{}
+	var mpDat map[string]interface{}
+	today := time.Now().Format("2006-01-02")
 	if mxDat := this.GetPermVar("dCnt"); mxDat != nil {
-		today := time.Now().Format("2006-01-02 15:04:05")
 		mpDat = mxDat.(map[string]interface{})
 		if day := mpDat["day"]; day != today {
 			mpDat = map[string]interface{}{"day": today}
 			this.SetPermVar("dCnt", mpDat)
 		}
 		return mpDat
+	} else {
+		mpDat = map[string]interface{}{"day": today}
 	}
 	return mpDat
 }
