@@ -287,7 +287,7 @@ func (this *Client) auth(msg *Msg) error {
 		this.state = ST_ESTABLISHED
 		if !this.MLoad(this.onMLoad) {
 			this.KLoad()
-			this.event.Users[this.Guid] = this
+			Post.PutQueueSpec(this.OnLogin)
 			return nil
 		}
 	} else {
@@ -331,6 +331,7 @@ func (this *Client) OnData(in *[]byte) (out []byte, action evio.Action) {
 
 func (this *Client) OnLogin() {
 	this.event.Users[this.Guid] = this
+	Hook.Fire("afterLogin", this.Guid)
 }
 
 // OnClose called when the client connection is closed.
