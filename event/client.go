@@ -331,14 +331,14 @@ func (this *Client) OnData(in *[]byte) (out []byte, action evio.Action) {
 
 func (this *Client) OnLogin() {
 	this.event.Users[this.Guid] = this
-	Hook.Fire("afterLogin", this.Guid)
+	Hook.Fire("afterLogin", this)
 }
 
 // OnClose called when the client connection is closed.
 func (this *Client) OnClose() {
 	err := this.KSave()
 	if err == nil {
-		Hook.Fire("beforeQuit", this.Guid)
+		Hook.Fire("beforeQuit", this)
 		this.MSave(nil)
 		delete(this.event.Users, this.Guid)
 		this.conn = nil
