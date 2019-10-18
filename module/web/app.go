@@ -5,6 +5,7 @@ import (
 	"net/http/pprof"
 
 	"github.com/TianQinS/websocket/config"
+	"github.com/iris-contrib/middleware/cors"
 	"github.com/kataras/iris"
 	"github.com/kataras/iris/context"
 	"github.com/kataras/iris/middleware/recover"
@@ -63,6 +64,16 @@ func NewApp(charset string) *iris.Application {
 	app.Use(recover.New())
 	app.OnErrorCode(iris.StatusNotFound, notFoundHandler)
 	app.OnErrorCode(iris.StatusForbidden, forbiddenHandler)
+
+	app.Use(cors.New(cors.Options{
+		AllowedOrigins: []string{"*"}, //allow hostname
+		// AllowedHeaders:   []string{"Content-Type"},
+		// AllowedMethods:   []string{"GET"},
+		// ExposedHeaders:   []string{"X-Header"},
+		// MaxAge:           int((24 * time.Hour).Seconds()),
+		AllowCredentials: true,
+	}))
+	app.AllowMethods(iris.MethodOptions)
 
 	app.Configure(iris.WithConfiguration(iris.Configuration{
 		DisableAutoFireStatusCode: false,
