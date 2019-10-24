@@ -84,6 +84,10 @@ func (this *Client) updateMap(mp1, mp2 map[string]interface{}) {
 	}
 }
 
+func (this *Client) Stat() int {
+	return this.state
+}
+
 // GetRunInt get an integer temporary variable.
 func (this *Client) GetRunInt(key string) int {
 	defer this.runLock.RUnlock()
@@ -99,6 +103,12 @@ func (this *Client) SetRunInt(key string, val int) {
 	defer this.runLock.Unlock()
 	this.runLock.Lock()
 	this.runInt[key] = val
+}
+
+func (this *Client) DelRunInt(key string) {
+	defer this.runLock.Unlock()
+	this.runLock.Lock()
+	delete(this.runInt, key)
 }
 
 // GetRunVar get a generic data variable.
