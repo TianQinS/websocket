@@ -140,7 +140,12 @@ func (this *Client) GetPermVar(key string) interface{} {
 
 func (this *Client) GetPermFloat64(key string) float64 {
 	if val := this.GetPermVar(key); val != nil {
-		return val.(float64)
+		switch val.(type) {
+		case float64:
+			return val.(float64)
+		case int:
+			return float64(val.(int))
+		}
 	}
 	return 0
 }
