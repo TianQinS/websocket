@@ -1,6 +1,7 @@
 package module
 
 import (
+	"fmt"
 	"sync"
 
 	"github.com/TianQinS/fastapi/basic"
@@ -90,8 +91,9 @@ func (this *ModuleManager) Run() {
 
 func (this *ModuleManager) Destroy() {
 	for _, m := range this.mods {
+		fmt.Println("Module", m.mi.GetTopic(), "closing...")
 		m.closeSig <- true
-		m.wg.Wait()
 		destroy(m)
+		m.wg.Wait()
 	}
 }
