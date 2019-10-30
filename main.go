@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/TianQinS/fastapi/post"
+	"github.com/TianQinS/phaser"
 	"github.com/TianQinS/websocket/config"
 	"github.com/TianQinS/websocket/event"
 	"github.com/TianQinS/websocket/module"
@@ -53,13 +54,15 @@ func main() {
 	}()
 
 	go func() {
+		game := phaser.NewPhaserModule("phaser", 1024000)
 		app.Run(
-			module.NewRPCModule(config.Conf.RpcTopic, 10240),
+			module.NewRPCModule(config.Conf.RpcTopic, 102400),
 			web.NewWebModule(config.Conf.Web.Topic, 1024),
+			game,
 		)
 		// for hotfix
 		hotfix.RegisterApp(app)
-
+		game.RegisterApp(app)
 		app.Serve("tcp://0.0.0.0:" + *port)
 		close(exitCh)
 	}()
