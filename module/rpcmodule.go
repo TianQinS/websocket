@@ -125,6 +125,8 @@ func (this *RPCModule) execute(f string, args []interface{}, callbackTopic, call
 		if callback != "" {
 			this.RemoteCallNR(callbackTopic, callback, ret...)
 		}
+	} else {
+		log.Println("RpcFunction not exist", f)
 	}
 }
 
@@ -157,6 +159,7 @@ func (this *RPCModule) CallOtherNR(f, otherTopic string, args ...interface{}) er
 func (this *RPCModule) RemoteCallNR(topic, f string, args ...interface{}) {
 	msg, err := this.packPubMsg(f, args)
 	if err != nil {
+		log.Panicln(err)
 		return
 	}
 	this.Rdb.Publish(topic, string(msg))
@@ -165,8 +168,10 @@ func (this *RPCModule) RemoteCallNR(topic, f string, args ...interface{}) {
 func (this *RPCModule) onCall(data string) {
 	msg, err := this.unpackMsg([]byte(data))
 	if err != nil {
+		log.Panicln(err)
 		return
 	}
+	// log.Println("onCall", msg.Func, msg.Args)
 	this.execute(msg.Func, msg.Args, msg.CallbackTopic, msg.Callback)
 }
 
@@ -179,6 +184,7 @@ func (this *RPCModule) RemoteCall(topic, f, callback string, args ...interface{}
 	if err != nil {
 		return
 	}
+	// log.Println(topic, string(msg))
 	this.Rdb.Rpush(topic, string(msg))
 }
 
@@ -241,6 +247,7 @@ func (this *RPCModule) Run(closeSig chan bool) {
 		case pmsg := <-ch:
 			this.onSubscribe(pmsg.Channel, pmsg.Payload)
 		case lmsg := <-ldat:
+			// log.Println(lmsg)
 			this.onCall(lmsg)
 		case <-this.tick:
 			// for normal register.

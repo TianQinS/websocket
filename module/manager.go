@@ -101,7 +101,7 @@ func (this *ModuleManager) Destroy() {
 }
 
 func init() {
-	log.SetPrefix("[ModuleManager] ")
+	// log.SetPrefix("[ModuleManager] ")
 	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 }

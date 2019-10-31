@@ -28,7 +28,7 @@ func init() {
 	if config.Conf.Debug {
 		hotfix.Update()
 	}
-	log.SetPrefix("[Phaser] ")
+	// log.SetPrefix("[Phaser] ")
 	log.SetFlags(log.Ldate | log.Lmicroseconds)
 }
 
