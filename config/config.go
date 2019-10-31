@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"runtime/debug"
 
 	"github.com/lytics/confl"
@@ -67,11 +67,11 @@ type Web struct {
 
 func init() {
 	if _, err := confl.DecodeFile(CONF_FILE, Conf); err != nil {
-		fmt.Printf("[Config] read conf file error. info=%s trace=%s\n", err.Error(), string(debug.Stack()))
+		log.Panicln("[Config] read conf file error. info=%s trace=%s\n", err.Error(), string(debug.Stack()))
 	} else {
 		if Conf.Pid == "" {
 			Conf.Pid = xid.New().String()
 		}
-		fmt.Printf("[Config] read conf ok, pid=%s.\n", Conf.Pid)
+		log.Printf("[Config] read conf ok, pid=%s.\n", Conf.Pid)
 	}
 }

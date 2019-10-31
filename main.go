@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 	"os"
 	"os/signal"
 	"runtime/debug"
@@ -28,6 +28,8 @@ func init() {
 	if config.Conf.Debug {
 		hotfix.Update()
 	}
+	log.SetPrefix("[Phaser] ")
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
 }
 
 func main() {
@@ -48,7 +50,7 @@ func main() {
 		exitOnce.Do(func() {
 			app.Close()
 			post.Close()
-			fmt.Printf("catch sig: %v, exit\n", sig)
+			log.Printf("catch sig: %v, exit\n", sig)
 			close(exitCh)
 		})
 	}()
@@ -68,5 +70,5 @@ func main() {
 	}()
 
 	<-exitCh
-	fmt.Println("exit finish.")
+	log.Println("exit finish.")
 }

@@ -3,6 +3,7 @@ package module
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"reflect"
 
 	"github.com/TianQinS/fastapi/basic"
@@ -206,7 +207,7 @@ func (this *RPCModule) OnInit(topic string, qSize uint64) {
 // RegisterRpc register a function only for remote call by redis.
 func (this *RPCModule) RegisterRpc(id string, f interface{}) {
 	if _, ok := this.RPCFunctions[id]; ok {
-		fmt.Printf("RPCFunction id %v: already registered\n", id)
+		log.Printf("RPCFunction id %v: already registered\n", id)
 	}
 	this.RPCFunctions[id] = f
 }

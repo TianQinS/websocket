@@ -1,7 +1,7 @@
 package module
 
 import (
-	"fmt"
+	"log"
 	"sync"
 
 	"github.com/TianQinS/fastapi/basic"
@@ -30,6 +30,7 @@ func run(m *DefaultModule) {
 			basic.PackErrorMsg(e, nil)
 		}
 	}()
+	log.Println("Module", m.mi.GetTopic(), "start...")
 	m.mi.Run(m.closeSig)
 	m.wg.Done()
 }
@@ -91,9 +92,16 @@ func (this *ModuleManager) Run() {
 
 func (this *ModuleManager) Destroy() {
 	for _, m := range this.mods {
-		fmt.Println("Module", m.mi.GetTopic(), "closing...")
+		log.Println("Module", m.mi.GetTopic(), "closing...")
 		m.closeSig <- true
 		destroy(m)
 		m.wg.Wait()
+		log.Println("Module", m.mi.GetTopic(), "closed.")
 	}
+}
+
+func init() {
+	log.SetPrefix("[ModuleManager] ")
+	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
+	log.SetFlags(log.Ldate | log.Lmicroseconds)
 }
