@@ -92,7 +92,7 @@ func (this *ModuleManager) Run() {
 
 func (this *ModuleManager) Destroy() {
 	for _, m := range this.mods {
-		log.Println("Module", m.mi.GetTopic(), "closing...")
+		// log.Println("Module", m.mi.GetTopic(), "closing...")
 		m.closeSig <- true
 		destroy(m)
 		m.wg.Wait()
@@ -103,5 +103,5 @@ func (this *ModuleManager) Destroy() {
 func init() {
 	// log.SetPrefix("[ModuleManager] ")
 	// log.SetFlags(log.Ldate | log.Lmicroseconds | log.Llongfile)
-	log.SetFlags(log.Ldate | log.Lmicroseconds)
+	log.SetFlags(log.Ldate | log.Ltime)
 }

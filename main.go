@@ -29,7 +29,7 @@ func init() {
 		hotfix.Update()
 	}
 	// log.SetPrefix("[Phaser] ")
-	log.SetFlags(log.Ldate | log.Lmicroseconds)
+	log.SetFlags(log.Ldate | log.Ltime)
 }
 
 func main() {
