@@ -21,6 +21,12 @@ const (
 	ST_STOP
 )
 
+const (
+	// LOGIN_SUCC represents login state.
+	LOGIN_SUCC = iota
+	LOGIN_PWD_FAILED
+)
+
 var (
 	Packer MsgPacker
 
@@ -285,6 +291,7 @@ func (this *Client) onMLoad(err error, res map[string]interface{}) {
 			return
 		}
 	}
+	this.CallNR("", "loginback", LOGIN_PWD_FAILED)
 	this.state = ST_STOP
 }
 
@@ -302,6 +309,7 @@ func (this *Client) auth(msg *Msg) error {
 		this.state = ST_ESTABLISHED
 		if !this.MLoad(this.onMLoad) {
 			this.KLoad()
+			// this.event.Users[this.Guid] = this
 			Post.PutQueueSpec(this.OnLogin)
 			return nil
 		}
@@ -347,6 +355,8 @@ func (this *Client) OnData(in *[]byte) (out []byte, action evio.Action) {
 func (this *Client) OnLogin() {
 	this.event.Users[this.Guid] = this
 	Hook.Fire("afterLogin", this)
+	// Notify login status.
+	this.CallNR("", "loginback", LOGIN_SUCC)
 }
 
 // OnClose called when the client connection is closed.
@@ -365,9 +375,11 @@ func (this *Client) OnClose() {
 // WriteMsg pushes an message to client.
 func (this *Client) WriteMsg(body []byte) (err error) {
 	if this.state == ST_ESTABLISHED {
-		// wsutil.WriteMessage(*this.conn, StateServerSide, OpText, body)
-		frame := ws.NewFrame(OpText, true, body)
-		err = ws.WriteFrame(*this.conn, frame)
+		if con := this.conn; con != nil {
+			// wsutil.WriteMessage(*this.conn, StateServerSide, OpText, body)
+			frame := ws.NewFrame(OpText, true, body)
+			err = ws.WriteFrame(*con, frame)
+		}
 	}
 	return
 }
